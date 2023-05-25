@@ -1,0 +1,15 @@
+/* tailwindcss */
+@import "~tailwindcss/base";
+@import "~tailwindcss/components";
+@import "~tailwindcss/utilities";
+@import "~antd/dist/reset.css";
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.ant-list-item {
+  padding: 9px 0 !important;
+}
