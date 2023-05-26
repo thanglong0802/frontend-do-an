@@ -166,6 +166,14 @@ function DetailPage() {
     }
   }
 
+  let tietKiem = Math.ceil((product.promotional_price / 100) * product.price);
+  tietKiem = Math.ceil(tietKiem / 1000) * 1000;
+
+  let giaKhuyenMai = Math.floor(
+    ((100 - product.promotional_price) / 100) * product.price
+  );
+  giaKhuyenMai = Math.floor(giaKhuyenMai / 1000) * 1000;
+
   return (
     <div>
       <Header />
@@ -222,11 +230,7 @@ function DetailPage() {
               <div>
                 Giá khuyến mãi :{" "}
                 <span className="font-bold text-red-600 text-xl">
-                  {(
-                    ((100 - product.promotional_price) / 100) *
-                    product.price
-                  ).toLocaleString()}
-                  đ
+                  {giaKhuyenMai.toLocaleString()}đ
                 </span>{" "}
                 (Đã có VAT)
               </div>
@@ -235,12 +239,8 @@ function DetailPage() {
                 <strike>{product.price?.toLocaleString()}đ</strike>
               </div>
               <div>
-                Tiết kiệm :{" "}
-                {(
-                  (product.promotional_price / 100) *
-                  product.price
-                ).toLocaleString()}
-                đ ({product.promotional_price}%)
+                Tiết kiệm : {tietKiem.toLocaleString()}đ (
+                {product.promotional_price}%)
               </div>
               <div>
                 Số lượng :{" "}
@@ -267,11 +267,11 @@ function DetailPage() {
                   <span className="font-bold">Nơi sản xuất</span> :{" "}
                   {product.where_production}
                 </div>
-                <div>
+                {/* <div>
                   <FaCheckCircle className="mr-2 text-green-600" />
                   <span className="font-bold">Nhà sản xuất</span> :{" "}
                   {product.producer}
-                </div>
+                </div> */}
                 <div>
                   <FaCheckCircle className="mr-2 text-green-600" />
                   <span className="font-bold">Trạng thái</span> :{" "}

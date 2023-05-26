@@ -311,8 +311,11 @@ function HomePage() {
                             </strike>{" "}
                             <span className="text-orange-600 font-bold ml-3">
                               {(
-                                ((100 - x.promotional_price) / 100) *
-                                x.price
+                                Math.floor(
+                                  (((100 - x.promotional_price) / 100) *
+                                    x.price) /
+                                    1000
+                                ) * 1000
                               ).toLocaleString()}
                               đ
                             </span>
