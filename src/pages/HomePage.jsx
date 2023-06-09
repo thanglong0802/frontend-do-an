@@ -135,7 +135,8 @@ function HomePage() {
           cart_create_request: {
             product_id: product.id,
             quantity_product: 1,
-            total_price: product.price,
+            total_price:
+              ((100 - product.promotional_price) / 100) * product.price,
           },
           name_customer: "",
           address: "",
@@ -145,6 +146,7 @@ function HomePage() {
     }
   }
   const handleChange = (newValue) => {
+    window.localStorage.setItem("type", newValue);
     navigate(`/category?type=${newValue}`);
   };
   return (
@@ -274,7 +276,11 @@ function HomePage() {
               {listCard?.map(
                 (x, index) =>
                   index <= 20 && (
-                    <Badge.Ribbon text={`${x.promotional_price}%`} color="red">
+                    <Badge.Ribbon
+                      text={`${x.promotional_price}%`}
+                      color="red"
+                      key={x.id}
+                    >
                       <Card
                         hoverable
                         style={{ height: 368 }}
@@ -307,7 +313,11 @@ function HomePage() {
                           <Meta title={x.name_product} className="capitalize" />
                           <div className="flex mt-4">
                             <strike className="font-bold">
-                              {x.price.toLocaleString()}đ
+                              {(
+                                (Math.floor(x.price) / 1000) *
+                                1000
+                              ).toLocaleString()}
+                              đ
                             </strike>{" "}
                             <span className="text-orange-600 font-bold ml-3">
                               {(
@@ -325,9 +335,14 @@ function HomePage() {
                           <Button
                             type="primary"
                             className="w-full"
+                            disabled={x.quantity <= 0}
                             onClick={() => saveOrder(x)}
                           >
-                            THÊM VÀO GIỎ HÀNG
+                            {x.quantity <= 0 ? (
+                              <span>HẾT HÀNG</span>
+                            ) : (
+                              <span>THÊM VÀO GIỎ HÀNG</span>
+                            )}
                           </Button>
                         </div>
                       </Card>

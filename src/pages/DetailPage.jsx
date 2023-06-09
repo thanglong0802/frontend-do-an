@@ -6,7 +6,7 @@ import {
   FaCheckCircle,
   FaClipboardCheck,
   FaCog,
-  FaCommentAlt,
+  // FaCommentAlt,
   FaDonate,
   FaHome,
   FaMapMarkerAlt,
@@ -134,8 +134,8 @@ function DetailPage() {
       key: "4",
       label: (
         <div>
-          <FaCommentAlt className="mr-2" />
-          ĐÁNH GIÁ SẢN PHẨM
+          {/* <FaCommentAlt className="mr-2" />
+          ĐÁNH GIÁ SẢN PHẨM */}
         </div>
       ),
       children: "Phần đánh giá sản phẩm",
@@ -242,14 +242,19 @@ function DetailPage() {
                 Tiết kiệm : {tietKiem.toLocaleString()}đ (
                 {product.promotional_price}%)
               </div>
-              <div>
+              <div className="flex">
                 Số lượng :{" "}
                 <InputNumber
                   defaultValue={1}
                   min={1}
+                  disabled={product.quantity <= 0}
+                  className="mx-2"
                   value={quantity}
                   onChange={(value) => setQuantity(value)}
                 />
+                <span className="ml-3 text-slate-400">
+                  {product.quantity} sản phẩm có sẵn
+                </span>
               </div>
               <div className="p-3">
                 <div>
@@ -286,6 +291,7 @@ function DetailPage() {
                 type="primary"
                 size="large"
                 className="w-full"
+                disabled={product.quantity <= 0}
                 onClick={() => saveOrder()}
               >
                 THÊM VÀO GIỎ HÀNG

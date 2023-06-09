@@ -28,6 +28,9 @@ function CategoryPage() {
   const [arrBrand, setArrBrand] = useState(
     JSON.parse(localStorage.getItem("arrBrand")) || []
   );
+  const [type, setType] = useState(
+    JSON.parse(localStorage.getItem("type")) || ""
+  );
   const [url, setUrl] = useState([]);
   const [flag, setFlag] = useState(false);
   const [product, setProduct] = useState([]);
@@ -43,8 +46,9 @@ function CategoryPage() {
   useEffect(() => {
     localStorage.setItem("arrPrice", JSON.stringify(arrPrice));
     localStorage.setItem("arrBrand", JSON.stringify(arrBrand));
+    localStorage.setItem("type", JSON.stringify(type));
     // eslint-disable-next-line
-  }, [arrPrice, arrBrand]);
+  }, [arrPrice, arrBrand, type]);
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("arrPrice"))) {
@@ -52,6 +56,9 @@ function CategoryPage() {
     }
     if (JSON.parse(localStorage.getItem("arrBrand"))) {
       setArrBrand(JSON.parse(localStorage.getItem("arrBrand")));
+    }
+    if (JSON.parse(localStorage.getItem("type"))) {
+      setType(JSON.parse(localStorage.getItem("type")));
     }
   }, []);
   // order
@@ -69,14 +76,26 @@ function CategoryPage() {
     }
   }, [flag]);
   useEffect(() => {
-    if (arrBrand.length > 0 && arrPrice.length === 0) {
+    if (arrBrand.length > 0 && arrPrice.length === 0 && type < 0) {
       navigate(`/category?brand=${arrBrand.join(",")}`);
-    } else if (arrBrand.length === 0 && arrPrice.length > 0) {
+    } else if (arrBrand.length === 0 && arrPrice.length > 0 && type < 0) {
       navigate(`/category?price=${arrPrice.join(",")}`);
-    } else if (arrBrand.length > 0 && arrPrice.length > 0) {
+    } else if (arrBrand.length > 0 && arrPrice.length > 0 && type < 0) {
       navigate(
         `/category?brand=${arrBrand.join(",")}&price=${arrPrice.join(",")}`
       );
+    } else if (arrBrand.length > 0 && arrPrice.length > 0 && type > 0) {
+      navigate(
+        `/category?brand=${arrBrand.join(",")}&price=${arrPrice.join(
+          ","
+        )}&type=${type}`
+      );
+    } else if (arrBrand.length > 0 && arrPrice.length === 0 && type > 0) {
+      navigate(`/category?brand=${arrBrand.join(",")}&type=${type}`);
+    } else if (arrBrand.length === 0 && arrPrice.length > 0 && type > 0) {
+      navigate(`/category?price=${arrPrice.join(",")}&type=${type}`);
+    } else if (type > 0 && arrBrand.length === 0 && arrPrice.length === 0) {
+      navigate(`/category?type=${type}`);
     } else {
       navigate("/category");
     }
@@ -183,7 +202,8 @@ function CategoryPage() {
           cart_create_request: {
             product_id: product.id,
             quantity_product: 1,
-            total_price: product.price,
+            total_price:
+              ((100 - product.promotional_price) / 100) * product.price,
           },
           name_customer: "",
           address: "",
@@ -254,16 +274,16 @@ function CategoryPage() {
                       <span className="capitalize">{x.name_category}</span>
                     }
                   >
-                    <ul className="px-4">
+                    <ul className="px-4 list-none">
                       {categoryChildren
                         .filter((y) => y.parent_id === x.id)
-                        .map((z) => (
+                        .map((z, index) => (
                           <li
                             key={z.id}
                             className="cursor-pointer capitalize"
                             onClick={() => navigate(`/category/filter/${z.id}`)}
                           >
-                            {z.name_category}
+                            {index + 1}. {z.name_category}
                           </li>
                         ))}
                     </ul>
@@ -393,91 +413,99 @@ function CategoryPage() {
           <div>
             <img src={banner} alt="banner" className="w-full" />
           </div>
-          {(Number(params.type) > 0
-            ? category.filter((x) => x.id === Number(params.type))
-            : category
-          ).map((x) => (
-            <div key={x.id} className="mt-5">
-              <h2 className="text-green-400 pb-5">
-                <span className="mr-2 text-teal-400">
-                  <FaClinicMedical />
-                </span>
-                <span className="capitalize">{x.name_category}</span>
-                <div className="text-sm font-bold float-right">
-                  <Link className="text-orange-600 no-underline" to="/">
-                    Xem thêm
-                  </Link>
-                </div>
-                <div className="grid grid-cols-4 mt-5 gap-3">
-                  {findByParentId(x.id).map((y) => (
-                    <React.Fragment key={y.id}>
-                      {findByChildrenId(y.id).map((z) => (
-                        <div key={z.id}>
-                          <Badge.Ribbon
-                            text={`${z.promotional_price}%`}
-                            color="red"
-                          >
-                            <Card
-                              hoverable
-                              style={{ height: 368 }}
-                              bodyStyle={{
-                                padding: "8px",
-                              }}
-                              cover={
+          {(type > 0 ? category.filter((x) => x.id === type) : category).map(
+            (x) => (
+              <div key={x.id} className="mt-5">
+                <h2 className="text-green-400 pb-5">
+                  <span className="mr-2 text-teal-400">
+                    <FaClinicMedical />
+                  </span>
+                  <span className="capitalize">{x.name_category}</span>
+                  <div className="text-sm font-bold float-right">
+                    <Link className="text-orange-600 no-underline" to="/">
+                      Xem thêm
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-4 mt-5 gap-3">
+                    {findByParentId(x.id).map((y) => (
+                      <React.Fragment key={y.id}>
+                        {findByChildrenId(y.id).map((z) => (
+                          <div key={z.id}>
+                            <Badge.Ribbon
+                              text={`${z.promotional_price}%`}
+                              color="red"
+                            >
+                              <Card
+                                hoverable
+                                style={{ height: 368 }}
+                                bodyStyle={{
+                                  padding: "8px",
+                                }}
+                                cover={
+                                  <Link
+                                    to={`/details/${z.id}`}
+                                    className="no-underline px-6 pt-2"
+                                  >
+                                    <img
+                                      alt={z.name_product}
+                                      style={{ height: 250 }}
+                                      width={190}
+                                      src={
+                                        url.find((y) => y.product_id === z.id)
+                                          ?.image_url
+                                      }
+                                    />
+                                  </Link>
+                                }
+                              >
                                 <Link
                                   to={`/details/${z.id}`}
-                                  className="no-underline px-6 pt-2"
+                                  className="no-underline"
                                 >
-                                  <img
-                                    alt={z.name_product}
-                                    style={{ height: 250 }}
-                                    width={190}
-                                    src={
-                                      url.find((y) => y.product_id === z.id)
-                                        ?.image_url
-                                    }
+                                  <Meta
+                                    title={z.name_product}
+                                    className="capitalize"
                                   />
+                                  <div className="flex mt-4">
+                                    <strike>
+                                      {(
+                                        (Math.floor(z.price) / 1000) *
+                                        1000
+                                      ).toLocaleString()}
+                                      đ
+                                    </strike>{" "}
+                                    <span className="text-orange-600 font-bold ml-3">
+                                      {(
+                                        Math.floor(
+                                          (((100 - z.promotional_price) / 100) *
+                                            z.price) /
+                                            1000
+                                        ) * 1000
+                                      ).toLocaleString()}
+                                      đ
+                                    </span>
+                                  </div>
                                 </Link>
-                              }
-                            >
-                              <Link
-                                to={`/details/${z.id}`}
-                                className="no-underline"
-                              >
-                                <Meta
-                                  title={z.name_product}
-                                  className="capitalize"
-                                />
-                                <div className="flex mt-4">
-                                  <strike>{z.price.toLocaleString()}đ</strike>{" "}
-                                  <span className="text-orange-600 font-bold ml-3">
-                                    {(
-                                      ((100 - z.promotional_price) / 100) *
-                                      z.price
-                                    ).toLocaleString()}
-                                    đ
-                                  </span>
+                                <div className="text-sm m-2">
+                                  <Button
+                                    type="primary"
+                                    className="w-full"
+                                    onClick={() => saveOrder(x)}
+                                  >
+                                    THÊM VÀO GIỎ HÀNG
+                                  </Button>
                                 </div>
-                              </Link>
-                              <div className="text-sm m-2">
-                                <Button
-                                  type="primary"
-                                  className="w-full"
-                                  onClick={() => saveOrder(x)}
-                                >
-                                  THÊM VÀO GIỎ HÀNG
-                                </Button>
-                              </div>
-                            </Card>
-                          </Badge.Ribbon>
-                        </div>
-                      ))}
-                    </React.Fragment>
-                  ))}
-                </div>
-              </h2>
-            </div>
-          ))}
+                              </Card>
+                            </Badge.Ribbon>
+                          </div>
+                        ))}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </h2>
+              </div>
+            )
+          )}
         </div>
       </div>
       <Footer />

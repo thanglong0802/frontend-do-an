@@ -22,7 +22,9 @@ const items = [
       getItem("Quản lý danh mục sản phẩm", "category"),
       getItem("Quản lý thuộc tính sản phẩm", "product-attribute"),
       getItem("Quản lý  giá trị thuộc tính sản phẩm", "product-value"),
+      getItem("Quản lý  ảnh sản phẩm", "product-image"),
       getItem("Quản lý người dùng", "user"),
+      getItem("Quản lý thống kê", "statistic"),
     ],
     "group"
   ),

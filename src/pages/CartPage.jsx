@@ -57,16 +57,22 @@ function CartPage() {
   }, [flag]);
 
   let totalMoney = JSON.parse(localStorage.getItem("listOrder"))
-    ? listKey
-        .reduce(
-          (n, { cart_create_request }) =>
-            n +
-            product.find((y) => y.id === cart_create_request?.product_id)
-              ?.price *
-              cart_create_request?.quantity_product,
-          0
-        )
-        .toLocaleString()
+    ? (
+        Math.floor(
+          listKey.reduce(
+            (n, { cart_create_request }) =>
+              n +
+              (((100 -
+                product.find((y) => y.id === cart_create_request?.product_id)
+                  ?.promotional_price) *
+                product.find((y) => y.id === cart_create_request?.product_id)
+                  ?.price) /
+                100) *
+                cart_create_request?.quantity_product,
+            0
+          ) / 1000
+        ) * 1000
+      ).toLocaleString()
     : 0;
   function deleteById(id) {
     setList(list.filter((x) => x.cart_create_request?.product_id !== id));
@@ -125,9 +131,17 @@ function CartPage() {
           </Link>
         </div>
       ),
-      price: `${product
-        .find((y) => y.id === x.cart_create_request?.product_id)
-        ?.price.toLocaleString()}đ`,
+      price: `${(
+        Math.floor(
+          ((100 -
+            product.find((y) => y.id === x.cart_create_request?.product_id)
+              ?.promotional_price) *
+            product.find((y) => y.id === x.cart_create_request?.product_id)
+              ?.price) /
+            100 /
+            1000
+        ) * 1000
+      ).toLocaleString()}đ`,
       quantity: (
         <InputNumber
           min={1}
@@ -138,7 +152,16 @@ function CartPage() {
         />
       ),
       total: `${(
-        product.find((y) => y.id === x.cart_create_request?.product_id)?.price *
+        Math.floor(
+          ((100 -
+            product.find((y) => y.id === x.cart_create_request?.product_id)
+              ?.promotional_price) *
+            product.find((y) => y.id === x.cart_create_request?.product_id)
+              ?.price) /
+            100 /
+            1000
+        ) *
+        1000 *
         x.cart_create_request?.quantity_product
       ).toLocaleString()}đ`,
       action: (

@@ -11,5 +11,7 @@ const routes = {
   categoryMana: "/admin/category",
   attributeMana: "/admin/product-attribute",
   valueMana: "/admin/product-value",
+  imageMana: "/admin/product-image",
+  statisticMana: "/admin/statistic",
 };
 export default routes;

@@ -190,7 +190,8 @@ function FilterPage() {
           cart_create_request: {
             product_id: product.id,
             quantity_product: 1,
-            total_price: product.price,
+            total_price:
+              ((100 - product.promotional_price) / 100) * product.price,
           },
           name_customer: "",
           address: "",
@@ -464,11 +465,20 @@ function FilterPage() {
                         <Link to={`/details/${z.id}`} className="no-underline">
                           <Meta title={z.name_product} className="capitalize" />
                           <div className="flex mt-4">
-                            <strike>{z.price.toLocaleString()}đ</strike>{" "}
+                            <strike>
+                              {(
+                                (Math.floor(z.price) / 1000) *
+                                1000
+                              ).toLocaleString()}
+                              đ
+                            </strike>{" "}
                             <span className="text-orange-600 font-bold ml-3">
                               {(
-                                ((100 - z.promotional_price) / 100) *
-                                z.price
+                                Math.floor(
+                                  (((100 - z.promotional_price) / 100) *
+                                    z.price) /
+                                    1000
+                                ) * 1000
                               ).toLocaleString()}
                               đ
                             </span>
@@ -478,9 +488,14 @@ function FilterPage() {
                           <Button
                             type="primary"
                             className="w-full"
+                            disabled={z.quantity <= 0}
                             onClick={() => saveOrder(z)}
                           >
-                            THÊM VÀO GIỎ HÀNG
+                            {z.quantity <= 0 ? (
+                              <span>HẾT HÀNG</span>
+                            ) : (
+                              <span>THÊM VÀO GIỎ HÀNG</span>
+                            )}
                           </Button>
                         </div>
                       </Card>
